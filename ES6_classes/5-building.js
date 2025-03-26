@@ -4,7 +4,7 @@ export default class Building {
 
     // Vérifier que la classe dérivée implémente evacuationWarningMessage
     if (this.constructor !== Building
-        && !Object.prototype.hasOwnProperty.call(this.constructor.prototype, 'evacuationWarningMessage')) {
+        && !this.constructor.prototype.hasOwnProperty('evacuationWarningMessage')) {
       throw new Error('Class extending Building must override evacuationWarningMessage');
     }
   }
