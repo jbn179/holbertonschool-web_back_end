@@ -1,4 +1,3 @@
-update_grade_by_city.js
 function updateStudentGradeByCity(studentsList, city, newGrades) {
   return studentsList
     .filter((student) => student.location === city)
