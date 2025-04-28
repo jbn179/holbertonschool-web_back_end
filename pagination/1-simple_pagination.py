@@ -50,7 +50,8 @@ class Server:
 
         Args:
             page (int, optional): Page number (1-indexed). Defaults to 1.
-            page_size (int, optional): Number of items per page. Defaults to 10.
+            page_size (int, optional): Number of items per page.
+            Defaults to 10.
 
         Returns:
             List[List]: The specified page of the dataset.
@@ -59,10 +60,10 @@ class Server:
         assert isinstance(page_size, int) and page_size > 0
 
         dataset = self.dataset()
-        
+
         if not dataset:
             return []
-            
+
         try:
             start_index, end_index = index_range(page, page_size)
             return dataset[start_index:end_index]
