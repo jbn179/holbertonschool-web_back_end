@@ -51,26 +51,27 @@ class Server:
             Dict: Dictionary with hypermedia pagination data
         """
         indexed_data = self.indexed_dataset()
-        
+
         # Validate index
-        assert index is None or (isinstance(index, int) and 0 <= index < len(self.dataset()))
-        
+        assert index is None or (isinstance(index, int) and
+               0 <= index < len(self.dataset()))
+
         if index is None:
             index = 0
-            
+
         # Find valid data items starting from index
         data = []
         current_index = index
-        
+
         # Collect page_size valid items or until we run out of items
         while len(data) < page_size and current_index < len(self.dataset()):
             if current_index in indexed_data:
                 data.append(indexed_data[current_index])
             current_index += 1
-            
+
         # Find next valid index for next_index
         next_index = current_index
-                
+
         return {
             'index': index,
             'data': data,
