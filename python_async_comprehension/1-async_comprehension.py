@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
-Async generator that yields a random number
+Module implementing async comprehension.
+This module provides functionality to collect values from an async generator
+using async comprehension syntax.
 """
 from typing import List
 import asyncio
