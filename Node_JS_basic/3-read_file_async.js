@@ -13,36 +13,36 @@ function countStudents(path) {
         return;
       }
       // Split the data into lines and remove empty lines
-        const lines = data.split('\n').filter((line) => line.trim() !== '');
+      const lines = data.split('\n').filter((line) => line.trim() !== '');
 
-        // Skip the header and filter out empty lines
-        const students = lines.slice(1);
+      // Skip the header and filter out empty lines
+      const students = lines.slice(1);
 
-        // Log the total number of students
-        console.log(`Number of students: ${students.length}`);
+      // Log the total number of students
+      console.log(`Number of students: ${students.length}`);
 
-        // Group students by field
-        const studentsByField = {};
+      // Group students by field
+      const studentsByField = {};
 
-        students.forEach((student) => {
-          const fields = student.split(',');
-          const field = fields[3];
-          const firstName = fields[0];
+      students.forEach((student) => {
+        const fields = student.split(',');
+        const field = fields[3];
+        const firstName = fields[0];
 
-          if (!studentsByField[field]) {
-            studentsByField[field] = [];
-          }
-          studentsByField[field].push(firstName);
-        });
-
-        // Log the number of students and the list of firstnames in each field
-        Object.keys(studentsByField).forEach((field) => {
-          const studentList = studentsByField[field];
-          console.log(`Number of students in ${field}: ${studentList.length}. List: ${studentList.join(', ')}`);
-        });
-
-        resolve();
+        if (!studentsByField[field]) {
+          studentsByField[field] = [];
+        }
+        studentsByField[field].push(firstName);
       });
+
+      // Log the number of students and the list of firstnames in each field
+      Object.keys(studentsByField).forEach((field) => {
+        const studentList = studentsByField[field];
+        console.log(`Number of students in ${field}: ${studentList.length}. List: ${studentList.join(', ')}`);
+      });
+
+      resolve();
+    });
   });
 }
 
