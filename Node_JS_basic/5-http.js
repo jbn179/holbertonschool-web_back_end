@@ -9,13 +9,13 @@ const app = http.createServer(async (req, res) => {
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain');
 
-  const url = req.url;
+  const { url } = req;
 
   if (url === '/') {
     res.end('Hello Holberton School!');
   } else if (url === '/students') {
     res.write('This is the list of our students\n');
-    
+
     try {
       // Create a custom implementation to capture the console.log output
       const outputCapture = [];
