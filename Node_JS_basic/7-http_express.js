@@ -19,7 +19,7 @@ function countStudents(path) {
 
       // Split data into lines and filter out empty lines
       const lines = data.split('\n').filter((line) => line.trim());
-      
+
       // Check if file has valid content (at least header + 1 data line)
       if (lines.length <= 1) {
         reject(new Error('Cannot load the database'));
@@ -73,7 +73,7 @@ app.get('/', (req, res) => {
 app.get('/students', async (req, res) => {
   // Set response content type to plain text
   res.set('Content-Type', 'text/plain');
-  
+
   // Get database filename from command line arguments
   const databaseFilename = process.argv[2];
 
