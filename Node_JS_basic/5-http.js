@@ -1,54 +1,68 @@
 const http = require('http');
-const countStudents = require('./3-read_file_async');
+const fs = require('fs');
 
-const port = 1245;
-const host = 'localhost';
-const dbPath = process.argv[2];
+function countStudents(path) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(path, 'utf-8', (err, data) => {
+      if (err) {
+        reject(new Error('Cannot load the database'));
+        return;
+      }
 
-const app = http.createServer(async (req, res) => {
-  res.statusCode = 200;
+      const lines = data.split('\n').filter((line) => line.trim());
+      if (lines.length <= 1) {
+        reject(new Error('Cannot load the database'));
+        return;
+      }
+
+      const columns = lines[0].split(',');
+      const fieldIndex = columns.indexOf('field');
+      const firstnameIndex = columns.indexOf('firstname');
+
+      const students = lines.slice(1);
+      const fields = {};
+
+      students.forEach((student) => {
+        const values = student.split(',');
+        const field = values[fieldIndex];
+        const firstname = values[firstnameIndex];
+
+        fields[field] = fields[field] || [];
+        fields[field].push(firstname);
+      });
+
+      let report = `Number of students: ${students.length}`;
+      Object.keys(fields).forEach((field) => {
+        report += `\nNumber of students in ${field}: ${fields[field].length}. List: ${fields[field].join(', ')}`;
+      });
+
+      resolve(report);
+    });
+  });
+}
+
+const app = http.createServer((req, res) => {
   res.setHeader('Content-Type', 'text/plain');
 
-  const { url } = req;
-
-  if (url === '/') {
+  if (req.url === '/') {
+    res.statusCode = 200;
     res.end('Hello Holberton School!');
-  } else if (url === '/students') {
+  } else if (req.url === '/students') {
+    const databaseFilename = process.argv[2];
+
+    res.statusCode = 200;
     res.write('This is the list of our students\n');
 
-    if (!dbPath) {
-      res.end('Cannot load the database');
-      return;
-    }
-
-    // Capture console.log output
-    const originalConsoleLog = console.log;
-    const output = [];
-    
-    console.log = (message) => {
-      output.push(message);
-    };
-
-    try {
-      await countStudents(dbPath);
-      
-      // Restore console.log
-      console.log = originalConsoleLog;
-      
-      res.end(output.join('\n'));
-    } catch (error) {
-      // Restore console.log in case of error
-      console.log = originalConsoleLog;
-      res.end(error.message);
-    }
+    countStudents(databaseFilename)
+      .then((report) => res.end(report))
+      .catch((error) => {
+        res.end(error.message);
+      });
   } else {
     res.statusCode = 404;
     res.end('Not found');
   }
 });
 
-app.listen(port, host, () => {
-  console.log(`Server running at http://${host}:${port}/`);
-});
-
+app.listen(1245);
 module.exports = app;
