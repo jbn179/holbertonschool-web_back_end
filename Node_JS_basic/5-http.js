@@ -16,15 +16,20 @@ const app = http.createServer(async (req, res) => {
   } else if (url === '/students') {
     res.write('This is the list of our students\n');
 
-    try {
-      // Capture console.log output
-      const originalConsoleLog = console.log;
-      const output = [];
-      
-      console.log = (message) => {
-        output.push(message);
-      };
+    if (!dbPath) {
+      res.end('Cannot load the database');
+      return;
+    }
 
+    // Capture console.log output
+    const originalConsoleLog = console.log;
+    const output = [];
+    
+    console.log = (message) => {
+      output.push(message);
+    };
+
+    try {
       await countStudents(dbPath);
       
       // Restore console.log
@@ -33,7 +38,7 @@ const app = http.createServer(async (req, res) => {
       res.end(output.join('\n'));
     } catch (error) {
       // Restore console.log in case of error
-      console.log = console.log.originalConsoleLog || console.log;
+      console.log = originalConsoleLog;
       res.end(error.message);
     }
   } else {
