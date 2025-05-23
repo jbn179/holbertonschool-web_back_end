@@ -14,52 +14,53 @@ const databasePath = process.argv[2];
  */
 function countStudents(path) {
   return new Promise((resolve, reject) => {
-    fs.readFile(path, 'utf8', (err, data) => {
+    fs.readFile(path, 'utf-8', (err, data) => {
       if (err) {
         reject(new Error('Cannot load the database'));
         return;
       }
-      
-      // Split the data into lines and remove empty lines
-      const lines = data.split('\n').filter((line) => line.trim() !== '');
 
-      // Skip the header and filter out empty lines
+      const lines = data.split('\n').filter((line) => line.trim());
+      if (lines.length <= 1) {
+        reject(new Error('Cannot load the database'));
+        return;
+      }
+
+      const columns = lines[0].split(',');
+      const fieldIndex = columns.indexOf('field');
+      const firstnameIndex = columns.indexOf('firstname');
+
       const students = lines.slice(1);
-
-      let result = `Number of students: ${students.length}\n`;
-
-      // Group students by field
-      const studentsByField = {};
+      const fields = {};
 
       students.forEach((student) => {
-        const fields = student.split(',');
-        const field = fields[3];
-        const firstName = fields[0];
+        const values = student.split(',');
+        const field = values[fieldIndex];
+        const firstname = values[firstnameIndex];
 
-        if (!studentsByField[field]) {
-          studentsByField[field] = [];
-        }
-        studentsByField[field].push(firstName);
+        fields[field] = fields[field] || [];
+        fields[field].push(firstname);
       });
 
-      // Build the result string with number of students and list of firstnames in each field
-      Object.keys(studentsByField).forEach((field) => {
-        const studentList = studentsByField[field];
-        result += `Number of students in ${field}: ${studentList.length}. List: ${studentList.join(', ')}\n`;
+      let report = `Number of students: ${students.length}`;
+      Object.keys(fields).forEach((field) => {
+        report += `\nNumber of students in ${field}: ${fields[field].length}. List: ${fields[field].join(', ')}`;
       });
 
-      resolve(result.trim());
+      resolve(report);
     });
   });
 }
 
 // Route for the root path
 app.get('/', (req, res) => {
+  res.type('text/plain');
   res.send('Hello Holberton School!');
 });
 
 // Route for /students
 app.get('/students', async (req, res) => {
+  res.type('text/plain');
   let responseText = 'This is the list of our students\n';
   
   try {
@@ -80,7 +81,7 @@ app.get('/students', async (req, res) => {
 
 // Start the server
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}/`);
+  // Don't log anything to avoid interfering with tests
 });
 
 module.exports = app;
